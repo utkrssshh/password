@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Password Game</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+      integrity="sha512-J46g4dyO4qeq/cfFKK3pOMWj9+g7VpVusouWWmzRs+9n4PiZ8y8rqxxi4+EMN5uM2Izh2Q/1JnY+q7pFU4mNsA=="
+      crossorigin="anonymous"
+    />
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #f0f0f0;
+        text-align: center;
+        margin: 100px;
+      }
+
+      #game-container {
+        max-width: 400px;
+        margin: 0 auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+      }
+
+      button {
+        background-color: #4caf50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #45a049;
+      }
+
+      p {
+        color: red;
+        font-weight: bold;
+      }
+
+      /* Updated celebratory styles */
+      #celebration {
+        display: none;
+        margin-top: 20px;
+        position: relative;
+      }
+
+      #congratulation-message {
+        font-size: 24px;
+        color: #4caf50;
+        font-weight: bold;
+      }
+
+      #confetti {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game-container">
+      <h2>Password Game</h2>
+      <form id="password-form">
+        <input
+          type="text"
+          id="password-input"
+          placeholder="Enter password"
+          onkeydown="handleKeyPress(event)"
+        />
+        <br />
+        <p id="error-message"></p>
+        <button type="button" onclick="validatePassword()">Submit</button>
+      </form>
+      <!-- Updated celebration element with congratulatory message -->
+      <div id="celebration">
+        <p
+          id="congratulation-message"
+          class="animate__animated animate__fadeIn"
+        >
+          Strong Password!
+        </p>
+        <div id="confetti"></div>
+      </div>
+    </div>
+
+    <script>
+      // Function to generate a random captcha
+      function generateCaptcha() {
+        const charsArray =
+          "46238abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        let captchaText = "";
+        const captchaLength = 5;
+
+        for (let i = 0; i < captchaLength; i++) {
+          const randomChar = Math.floor(Math.random() * charsArray.length);
+          captchaText += charsArray[randomChar];
+        }
+
+        return captchaText;
+      }
+
+      // Initialize captcha on page load
+      var captchaText = generateCaptcha();
+
+      // Function to handle keydown event (Enter key)
+      function handleKeyPress(event) {
+        if (event.key === "Enter") {
+          event.preventDefault(); // Prevent the default behavior of the Enter key
+          validatePassword();
+        }
+      }
+
+      // Function to trigger confetti animation
+      function triggerConfetti() {
+        particlesJS("confetti", {
+          particles: {
+            number: { value: 80 },
+            size: { value: 3 },
+            color: { value: "#4caf50" },
+            line_linked: { color: "#4caf50", opacity: 0.5 },
+          },
+          interactivity: {
+            events: {
+              onhover: { enable: true, mode: "repulse" },
+            },
+          },
+        });
+      }
+
+      function checkRiddleAnswer(password) {
+        // Riddle question and answer
+        const riddleQuestion =
+          "If Alex is the son of Lucy, and Lucy's father is Jack, what is the relationship between Alex and Jack?";
+        const riddleAnswer = "grandson";
+        var ques =
+          "If Alex is the son of Lucy, and Lucy's father is Jack, what is the relationship between Alex and Jack?";
+
+        // Check if the riddle answer is part of the password
+        if (password.toLowerCase().includes(riddleAnswer)) {
+          return true; // Riddle answer is correct
+        } else {
+          return false; // Riddle answer is incorrect
+        }
+      }
+
+      function validatePassword() {
+        var password = document.getElementById("password-input").value;
+        var errorMessage = document.getElementById("error-message");
+        var celebrationElement = document.getElementById("celebration");
+
+        // Check if the password length is less than or equal to 4
+
+        // Check if the password contains common words
+        var commonWords = [
+          "1234",
+          "123",
+          "abc",
+          "abcd",
+          "abcde",
+          "abcdef",
+          "12",
+          "23",
+          "34",
+          "45",
+          "56",
+          "67",
+          "78",
+          "89",
+          "12345",
+          "123",
+        ];
+        var containsCommonWord = commonWords.some((word) =>
+          password.includes(word)
+        );
+
+        if (containsCommonWord) {
+          errorMessage.innerHTML =
+            "Your password should not contain any sequential words.";
+          return;
+        }
+
+        if (password.length <= 4) {
+          errorMessage.innerHTML = "Length should be equal or more than 5.";
+          return;
+        }
+
+        // Check if the password contains an uppercase letter
+        if (!/[A-Z]/.test(password)) {
+          errorMessage.innerHTML =
+            "Your password should contain uppercase letter.";
+          return;
+        }
+
+        // Check if the password contains a number
+        if (!/\d/.test(password)) {
+          errorMessage.innerHTML = "Your password should contain a number.";
+          return;
+        }
+
+        // Check if the password contains a special character
+        if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+          errorMessage.innerHTML =
+            "Your password should contain a special character.";
+          return;
+        }
+
+        // Check if the password contains the name or capital of a state in India
+        var stateCapitals = {
+          rajasthan: "jaipur",
+          maharashtra: "mumbai",
+          uttarpradesh: "lucknow",
+          tamilnadu: "chennai",
+          karnataka: "bangalore",
+          telangana: "hyderabad",
+          westbengal: "kolkata",
+          delhi: "delhi",
+          gujarat: "gandhinagar",
+          punjab: "chandigarh",
+          andhrapradesh: "amaravati",
+          arunachalpradesh: "itanagar",
+          assam: "dispur",
+          bihar: "patna",
+          chhattisgarh: "raipur",
+          goa: "panaji",
+          haryana: "chandigarh",
+          himanchalpradesh: "shimla",
+          jharkhand: "ranchi",
+          kerala: "thiruvananthapuram",
+          manipur: "imphal",
+          sikkim: "gangtok",
+          meghalaya: "shillong",
+          mizoram: "aizwl",
+          nagaland: "kohima",
+          tripura: "agartala",
+          odisha: "bhubaneshwar",
+          uttrakhand: "dehradun",
+          madhayapradesh: "bhopal",
+          Rajasthan: "Jaipur",
+          Maharashtra: "Mumbai",
+          UttarPradesh: "Lucknow",
+          TamilNadu: "Chennai",
+          Karnataka: "Bangalore",
+          Telangana: "Hyderabad",
+          WestBengal: "Kolkata",
+          Gujarat: "Gandhinagar",
+          Punjab: "Chandigarh",
+          AndhraPradesh: "Amaravati",
+          ArunachalPradesh: "Itanagar",
+          Assam: "Dispur",
+          Bihar: "Patna",
+          Chhattisgarh: "Raipur",
+          Goa: "Panaji",
+          Haryana: "Chandigarh",
+          HimachalPradesh: "Shimla",
+          Jharkhand: "Ranchi",
+          Kerala: "Thiruvananthapuram",
+          Manipur: "Imphal",
+          Sikkim: "Gangtok",
+          Meghalaya: "Shillong",
+          Mizoram: "Aizawl",
+          Nagaland: "Kohima",
+          Tripura: "Agartala",
+          Odisha: "Bhubaneshwar",
+          Uttarakhand: "Dehradun",
+          MadhyaPradesh: "Bhopal",
+          Delhi: "Delhi",
+          // Add more states and capitals here
+        };
+
+        var containsStateCapital = Object.keys(stateCapitals).some((state) =>
+          password.includes(state)
+        );
+
+        var capitals = Object.values(stateCapitals).some((state) =>
+          password.includes(state)
+        );
+
+        if (!containsStateCapital) {
+          errorMessage.innerHTML =
+            "Your password should contain the name of a state in India.";
+          return;
+        }
+
+        // Calculate the product of all digits in the password
+        var digits = password.match(/\d/g);
+        var product = digits
+          ? digits.reduce((acc, digit) => acc * digit, 1)
+          : 0;
+
+        // Check if the product of all entered numbers is equal to 24
+        if (product !== 24) {
+          errorMessage.innerHTML =
+            "The product of all entered numbers should be equal to 24.";
+          return;
+        }
+
+        // Check if the current month is present in the password
+        var currentDate = new Date();
+        var currentMonth = currentDate.toLocaleString("en-US", {
+          month: "long",
+        });
+
+        if (password.toLowerCase().indexOf(currentMonth.toLowerCase()) === -1) {
+          errorMessage.innerHTML =
+            "The password should contain the current month";
+          return;
+        }
+
+        // Check if the captcha text is present in the password
+        if (password.indexOf(captchaText) === -1) {
+          errorMessage.innerHTML =
+            "The password should contain the captcha - " + captchaText;
+          return;
+        }
+
+        if (!capitals) {
+          errorMessage.innerHTML =
+            "Your password should contain the name of the capital of any state of India.";
+          return;
+        }
+
+        if (!checkRiddleAnswer(password)) {
+          errorMessage.innerHTML =
+            "Your password whould contain the answer of this riddle. - <br> If Rahul is the son of Ram, and Ram's father is Shyam, what is the relationship between Rahul and Shyam?";
+          return;
+        }
+
+        // If all checks pass, show celebration, hide form, and trigger confetti
+        errorMessage.innerHTML = "";
+        celebrationElement.style.display = "block";
+        document.getElementById("password-form").style.display = "none";
+
+        // Show congratulatory message
+        var congratulationMessage = document.getElementById(
+          "congratulation-message"
+        );
+        congratulationMessage.style.display = "block";
+
+        // Trigger confetti animation
+        triggerConfetti();
+      }
+    </script>
+  </body>
+</html>
